@@ -1,4 +1,4 @@
-HOST=localhost
+HOST=/
 PORT=9000
 PEER_PORT=9000
-PEER_PATH=peer
+PEER_PATH=/peer
