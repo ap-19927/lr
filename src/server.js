@@ -1,16 +1,13 @@
 require("dotenv").config();
-const path = require("path");
 const express = require("express");
 const expressPeerServer = require('peer').ExpressPeerServer;
 
 const app = express();
 
-const config = {
+const clientConfig = {
   host: process.env.HOST,
-  port: process.env.PORT,
+  port: process.env.PEER_PORT,
   path: process.env.PEER_PATH,
-  key: process.env.KEY,
-  proxied: true,
 }
 
 app.use(express.static("dist", { root: "." }));
@@ -19,10 +16,15 @@ app.get("/", (req, res) => {
   res.sendFile("/index.html", { root: "../dist" })
 });
 
-app.get("/config", (req, res) => res.send(config));
+app.get("/config", (req, res) => res.send(clientConfig));
 
 const server = app.listen(process.env.PORT);
 
-const peerServer = expressPeerServer(server, config);
+const serverConfig = {
+  port: process.env.PEER_PORT,
+  path: process.env.PEER_PATH,
+  proxied: true,
+}
+const peerServer = expressPeerServer(server, serverConfig);
 
 app.use("/", peerServer);
