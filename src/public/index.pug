@@ -1,12 +1,18 @@
-head
-body
-  p#selfID.
-  br
-  input(type='text' name='ConnectPeer' placeholder='connect to ID' id='peerID' required)
-  button#connectButton(type='button') Connect 
-  input(type='text' name='messageBox' placeholder='message' id='message' required)
-  button#messageButton(type='button') Send 
-  p#connection
-  p#messages
-  script(src='javascripts/peerjs.min.js')
-  script(type='module', src='javascripts/index.js')
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='./stylesheets/stylesheet.css')
+  body
+    p#selfID.
+    br
+    input(type='text' name='ConnectPeer' placeholder='connect to ID' id='peerID' required)
+    button#connectButton(type='button') Connect
+    input(type='text' name='messageBox' placeholder='message' id='message' required)
+    button#messageButton(type='button') Send
+    p#connection
+    p#messages
+    footer
+      a(href='https://roadpeoples.org') back
+    script(src='javascripts/peerjs.min.js')
+    script(type='module', src='javascripts/index.js')

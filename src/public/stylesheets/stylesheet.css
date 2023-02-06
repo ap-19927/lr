@@ -1,0 +1,16 @@
+body {
+  background: #969696;
+  font-size: 20px;
+  color: black !important;
+  font-family: 'monospace';
+}
+a:link {
+  text-decoration: underline !important;
+}
+a:hover {
+  text-decoration:none !important;
+  color: black;
+}
+a {
+  color: black;
+}

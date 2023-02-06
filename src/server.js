@@ -8,7 +8,7 @@ const clientConfig = {
   host: process.env.HOST,
   port: process.env.PEER_PORT,
   path: process.env.PEER_PATH,
-  secure: true,
+//  secure: true,
 }
 
 app.use(express.static("dist", { root: "." }));
