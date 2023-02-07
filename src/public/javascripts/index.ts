@@ -27,11 +27,14 @@ for(const id in peerMessages)
 
 const messagesHistory = () => {
   otherMessages.innerHTML = "";
+  selectedID.innerHTML = "";
   const id = document.getElementById("otherPeerID").value;
-  if(id !== "0")
+  if(id !== "0") {
+    selectedID.innerHTML = id;
     peerMessages[id].forEach( (a) => {
       otherMessages.innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${otherMessages.innerHTML}`;
     });
+  }
 }
 document.getElementById("otherPeerID").onchange = messagesHistory;
 
