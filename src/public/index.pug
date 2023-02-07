@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title= title
+    title Local road
     link(rel='stylesheet', href='./stylesheets/stylesheet.css')
   body
     p#selfID.
@@ -12,7 +12,10 @@ html
     button#messageButton(type='button') Send
     p#connection
     p#messages
+    p Past Messages
+    select#otherPeerID
+    p#otherMessages
     footer
       a(href='https://roadpeoples.org') back
-    script(src='javascripts/peerjs.min.js')
-    script(type='module', src='javascripts/index.js')
+  script(src='javascripts/peerjs.min.js')
+  script(type='module', src='javascripts/index.ts')

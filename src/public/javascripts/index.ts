@@ -6,10 +6,11 @@ const ID = storage.peer ? storage.peer : [...Array(16)].map(() => Math.floor(Mat
 if(!storage.peer) storage.setItem("peer", ID);
 if(!storage.peer_messages) storage.setItem("peer_messages", `{"0":"0"}`);
 
+const peerMessages = JSON.parse(storage.peer_messages);
+
 const oldMessages = (peerID) => {
   connection.innerHTML = `Connected to ${peerID}.`
   messages.innerHTML = "";
-  const peerMessages = JSON.parse(storage.peer_messages); 
   if(!peerMessages[peerID]) {
     peerMessages[peerID] = [];
     storage.peer_messages = JSON.stringify(peerMessages);
@@ -19,6 +20,20 @@ const oldMessages = (peerID) => {
       messages.innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${messages.innerHTML}`;
     });
 }
+
+const selectPeerID = document.getElementById("otherPeerID").options;
+for(const id in peerMessages)
+  selectPeerID.add(new Option(id));
+
+const messagesHistory = () => {
+  otherMessages.innerHTML = "";
+  const id = document.getElementById("otherPeerID").value;
+  if(id !== "0")
+    peerMessages[id].forEach( (a) => {
+      otherMessages.innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${otherMessages.innerHTML}`;
+    });
+}
+document.getElementById("otherPeerID").onchange = messagesHistory;
 
 const data = axios({
     method: "get",
