@@ -1,5 +1,4 @@
 import express, { Express, Request, Response } from "express";
-//const expressPeerServer = require('peer').ExpressPeerServer;
 import { ExpressPeerServer as expressPeerServer } from "peer";
 
 const app: Express = express();
