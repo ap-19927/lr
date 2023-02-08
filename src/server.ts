@@ -14,7 +14,7 @@ app.use(express.static("dist"));
 
 app.get("/", (req: Request, res: Response) => res.sendFile("/index.html", { root: "./dist" }));
 
-app.get("/config", (req: Request, res: Response) => res.send(clientConfig));
+app.post("/config", (req: Request, res: Response) => res.send(clientConfig));
 
 const server = app.listen(process.env.PORT);
 

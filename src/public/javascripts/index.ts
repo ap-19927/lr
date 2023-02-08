@@ -39,7 +39,7 @@ const messagesHistory = () => {
 document.getElementById("otherPeerID").onchange = messagesHistory;
 
 const data = axios({
-    method: "get",
+    method: "post",
     url: "/config",
     responseType: "json",
   })
