@@ -5,9 +5,10 @@ const app: Express = express();
 
 const clientConfig = {
   host: process.env.HOST,
+  key: process.env.KEY,
   port: process.env.PEER_PORT,
   path: process.env.PEER_PATH,
-//  secure: true,
+  secure: true,
 }
 
 app.use(express.static("dist"));
@@ -19,6 +20,7 @@ app.post("/config", (req: Request, res: Response) => res.send(clientConfig));
 const server = app.listen(process.env.PORT);
 
 const serverConfig = {
+  key: process.env.KEY,
   port: Number(process.env.PEER_PORT),
   path: process.env.PEER_PATH || "/peer",
   proxied: true,
