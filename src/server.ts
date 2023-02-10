@@ -9,6 +9,13 @@ const clientConfig = {
   port: process.env.PEER_PORT,
   path: process.env.PEER_PATH,
   secure: true,
+  config: {
+    "iceServers": [
+      {
+        urls: "stun:relay.metered.ca:80",
+      },
+    ],
+  },
 }
 
 app.use(express.static("dist"));
