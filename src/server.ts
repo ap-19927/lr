@@ -14,6 +14,11 @@ const clientConfig = {
       {
         urls: "stun:relay.metered.ca:80",
       },
+      {
+        urls: process.env.TURN_SERVER,
+        username: process.env.TURN_USER,
+        credential: process.env.TURN_CRED,
+      },
     ],
   },
 }
