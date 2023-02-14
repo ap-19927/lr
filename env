@@ -3,3 +3,8 @@ key=toast
 PORT=9000
 PEER_PORT=9000
 PEER_PATH=/peer
+
+STUN_SERVER=stun:stun.l.google.com:19302
+TURN_SERVER=turn:0.peerjs.com:3478
+TURN_USER=peerjs
+TURN_CRED=peerjsp
