@@ -12,7 +12,7 @@ const clientConfig = {
   config: {
     "iceServers": [
       {
-        urls: "stun:relay.metered.ca:80",
+        urls: process.env.STUN_SERVER,
       },
       {
         urls: process.env.TURN_SERVER,
