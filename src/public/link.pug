@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title Local road: links
+    link(rel="stylesheet", href="./stylesheets/stylesheet.css")
+    link(href="data:image/x-icon;base64,A" rel="icon" type="image/x-icon")
+  body
+    p#selfID.
+    input(type="text" name="AllowConnectionsFrom" placeholder="Allow Connections From" id="allowConnectionsFrom" required)
+    button#allowConnectionsFromButton(type="button") Allow
+    br
+    p
+      a(href="/") back
+  script(src="javascripts/peerjs.min.js")
+  script(type="module", src="javascripts/link.ts")
