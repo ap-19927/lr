@@ -12,3 +12,4 @@ Please refer to the `readme.md` in the `setup` directory.
 5. Visit `localhost:9000` in your browser.
 ##### References
 1. [https://jmcker.github.io/Peer-to-Peer-Cue-System/](https://jmcker.github.io/Peer-to-Peer-Cue-System/)
+2. [https://medium.com/samsung-internet-dev/building-an-internet-connected-phone-with-peerjs-775bd6ffebec](https://medium.com/samsung-internet-dev/building-an-internet-connected-phone-with-peerjs-775bd6ffebec)

@@ -99,14 +99,13 @@ const getMessage = (message) => {
 }
 peer.on("connection", (connection) => {
   const conf = confirm(`Incoming connection from ${connection.peer}`);
-  conn = connection;
   if(conf) {
+    conn = connection;
     getPeerID();
-    connection.on("data", getMessage);
+    conn.on("data", getMessage);
   }
   else {
-    conn.close();
-    conn = null;
+    connection.close();
   }
 });
 

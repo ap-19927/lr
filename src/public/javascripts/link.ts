@@ -10,30 +10,29 @@ const data = axios({
 const storage = window.localStorage;
 
 const ID = storage.peer;
-const peer = new Peer(ID, await data);
-console.log(peer);
+const peer = new Peer(`link-${ID}`, await data);
 peer.on("open", (id) => {
-  console.log("h, ",id);
-  document.getElementById("selfID").innerHTML = `Your ID is ${id}.`;
+  document.getElementById("selfID").innerHTML = `Your ID is ${id.slice(5)}.`;
 });
 
 let conn = null;
 const sendSelfID = () => {
   const selfID = document.getElementById("allowConnectionsFrom").value;
-  conn = peer.connect(selfID);
+  conn = peer.connect(`link-${selfID}`);
 }
 document.getElementById("allowConnectionsFromButton").addEventListener("click", sendSelfID);
 
 peer.on("connection", (connection) => {
-  const conf = confirm(`Change ID to ${connection.peer}`);
-  conn = connection;
+  const newID = connection.peer.slice(5);
+  const conf = confirm(`Change ID to ${newID}`);
   if(conf) {
-    storage.setItem(":peer", connection.peer);
+    conn = connection;
+    storage.setItem("peer", newID);
+    document.getElementById("selfID").innerHTML = `Your ID is now ${newID}. Please close this window.`;
     conn.close();
     conn = null;
   }
   else {
-    conn.close();
-    conn = null;
+    connection.close();
   }
 });
