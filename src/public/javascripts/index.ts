@@ -9,15 +9,15 @@ if(!storage.peer_messages) storage.setItem("peer_messages", `{"0":"0"}`);
 const peerMessages = JSON.parse(storage.peer_messages);
 
 const oldMessages = (peerID) => {
-  connection.innerHTML = `Connected to ${peerID}.`
-  messages.innerHTML = "";
+  document.getElementById("connection").innerHTML = `Connected to ${peerID}.`
+  document.getElementById("messages").innerHTML = "";
   if(!peerMessages[peerID]) {
     peerMessages[peerID] = [];
     storage.peer_messages = JSON.stringify(peerMessages);
   }
   if(peerMessages[peerID].length !== 0)
     peerMessages[peerID].forEach( (a) => {
-      messages.innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${messages.innerHTML}`;
+      document.getElementById("messages").innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${document.getElementById("messages").innerHTML}`;
     });
 }
 
@@ -60,7 +60,7 @@ const sendPeerID = () => {
     conn.on("data", (message) => getMessage(message));
   });
   conn.on("close", () => {
-    connection.innerHTML = "Connection closed by peer.";
+    document.getElementById("connection").innerHTML = "Connection closed by peer.";
   });
 }
 document.getElementById("connectButton").addEventListener("click", sendPeerID);
@@ -69,7 +69,7 @@ const sendMessage = () => {
   const message = document.getElementById("message").value;
   conn.send(message);
   const date = new Date();
-  messages.innerHTML = `<br> Self: ${date} ${message} ${messages.innerHTML}`;
+  document.getElementById("messages").innerHTML = `<br> Self: ${date} ${message} ${document.getElementById("messages").innerHTML}`;
   const peerID = conn.peer;
   const peerMessages = JSON.parse(storage.peer_messages); 
   peerMessages[peerID].push(["Self", date, message]);
@@ -86,34 +86,33 @@ const getPeerID = () => {
     oldMessages(peerID);
   });
   conn.on("close", () => {
-    connection.innerHTML = "Connection closed by peer.";
+    document.getElementById("connection").innerHTML = "Connection closed by peer.";
   });
 }
 const getMessage = (message) => {
   const peerID = conn.peer;
   const date = new Date();
-  messages.innerHTML = `<br> Peer: ${date} ${message} ${messages.innerHTML}`;
+  document.getElementById("messages").innerHTML = `<br> Peer: ${date} ${message} ${document.getElementById("messages").innerHTML}`;
   const peerMessages = JSON.parse(storage.peer_messages);
   peerMessages[peerID].push(["Peer", date, message]);
   storage.peer_messages = JSON.stringify(peerMessages);
 }
 peer.on("connection", (connection) => {
   const conf = confirm(`Incoming connection from ${connection.peer}`);
-  conn = connection;
   if(conf) {
+    conn = connection;
     getPeerID();
-    connection.on("data", getMessage);
+    conn.on("data", getMessage);
   }
   else {
-    conn.close();
-    conn = null;
+    connection.close();
   }
 });
 
 peer.on("disconnected", () => {
-  connection.innerHTML = "Connection lost.";
+  document.getElementById("connection").innerHTML = "Connection lost.";
 });
 peer.on("close", () => {
   conn = null;
-  connection.innerHTML = "Connection lost.";
+  document.getElementById("connection").innerHTML = "Connection lost.";
 });

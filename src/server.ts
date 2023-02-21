@@ -26,6 +26,7 @@ const clientConfig = {
 app.use(express.static("dist"));
 
 app.get("/", (req: Request, res: Response) => res.sendFile("/index.html", { root: "./dist" }));
+app.get("/link", (req: Request, res: Response) => res.sendFile("/link.html", { root: "./dist" }));
 
 app.post("/config", (req: Request, res: Response) => res.send(clientConfig));
 
