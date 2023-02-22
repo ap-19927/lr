@@ -54,14 +54,25 @@ peer.on("open", (id) => {
 let conn = null;
 const sendPeerID = () => {
   const peerID = document.getElementById("peerID").value;
-  conn = peer.connect(peerID);
-  conn.on("open", () => {
-    oldMessages(peerID);
-    conn.on("data", (message) => getMessage(message));
-  });
-  conn.on("close", () => {
-    document.getElementById("connection").innerHTML = "Connection closed by peer.";
-  });
+  if(peerID !== "") {
+    const conf = confirm(`Connect to ${peerID}?`);
+    if(conf) {
+      if(conn) {
+        conn.close();
+        document.getElementById("connection").innerHTML = "Connection closed by self.";
+      }
+      conn = peer.connect(peerID);
+      conn.on("open", () => {
+        oldMessages(peerID);
+        conn.on("data", (message) => {
+          getMessage(message);
+        });
+      });
+      conn.on("close", () => {
+        document.getElementById("connection").innerHTML = "Connection closed by peer.";
+      });
+    }
+  }
 }
 document.getElementById("connectButton").addEventListener("click", sendPeerID);
 
@@ -100,6 +111,8 @@ const getMessage = (message) => {
 peer.on("connection", (connection) => {
   const conf = confirm(`Incoming connection from ${connection.peer}`);
   if(conf) {
+    if(conn)
+      conn.close();
     conn = connection;
     getPeerID();
     conn.on("data", getMessage);
