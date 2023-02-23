@@ -42,9 +42,7 @@ const peer = new Peer(ID, await data);
 const messageDetails = (message, peerID, person) => {
   const date = new Date();
   messagesBox.innerHTML = `<br> ${person}: ${date} ${message} ${messagesBox.innerHTML}`;
-  const peerMessages = JSON.parse(storage.peer_messages); 
   peerMessages[peerID].push([person, date, message]);
-  storage.peer_messages = JSON.stringify(peerMessages);
 }
 const getMessage = (message) => {
   messageDetails(message, conn.peer, "Peer");
@@ -52,10 +50,8 @@ const getMessage = (message) => {
 const oldMessages = (peerID) => {
   connectionBox.innerHTML = `Connected to ${peerID}.`
   messagesBox.innerHTML = "";
-  if(!peerMessages[peerID]) {
+  if(!peerMessages[peerID])
     peerMessages[peerID] = [];
-    storage.peer_messages = JSON.stringify(peerMessages);
-  }
   if(peerMessages[peerID].length !== 0)
     peerMessages[peerID].forEach( (a) => {
       messagesBox.innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${messagesBox.innerHTML}`;
@@ -71,6 +67,7 @@ const connectionDetails = (connection, peerID) => {
   connection.on("data", getMessage);
   connection.on("close", () => {
     connectionBox.innerHTML = "Connection closed.";
+    storage.peer_messages = JSON.stringify(peerMessages);
   });
 }
 const sendPeerID = () => {
@@ -109,9 +106,5 @@ document.getElementById("messageButton").addEventListener("click", sendMessage);
 
 peer.on("disconnected", () => {
   connectionBox.innerHTML = "Connection disconnected.";
-});
-
-peer.on("close", () => {
-  conn = null;
-  connectionBox.innerHTML = "Connection closed.";
+  storage.peer_messages = JSON.stringify(peerMessages);
 });
