@@ -7,28 +7,18 @@ if(!storage.peer) storage.setItem("peer", ID);
 if(!storage.peer_messages) storage.setItem("peer_messages", `{"0":"0"}`);
 
 const peerMessages = JSON.parse(storage.peer_messages);
+const connectionBox = document.getElementById("connection");
+const messagesBox = document.getElementById("messages");
+const otherPeerID = document.getElementById("otherPeerID");
 
-const oldMessages = (peerID) => {
-  document.getElementById("connection").innerHTML = `Connected to ${peerID}.`
-  document.getElementById("messages").innerHTML = "";
-  if(!peerMessages[peerID]) {
-    peerMessages[peerID] = [];
-    storage.peer_messages = JSON.stringify(peerMessages);
-  }
-  if(peerMessages[peerID].length !== 0)
-    peerMessages[peerID].forEach( (a) => {
-      document.getElementById("messages").innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${document.getElementById("messages").innerHTML}`;
-    });
-}
-
-const selectPeerID = document.getElementById("otherPeerID").options;
+const selectPeerID = otherPeerID.options;
 for(const id in peerMessages)
   selectPeerID.add(new Option(id));
 
 const messagesHistory = () => {
   otherMessages.innerHTML = "";
   selectedID.innerHTML = "";
-  const id = document.getElementById("otherPeerID").value;
+  const id = otherPeerID.value;
   if(id !== "0") {
     selectedID.innerHTML = id;
     peerMessages[id].forEach( (a) => {
@@ -36,7 +26,9 @@ const messagesHistory = () => {
     });
   }
 }
-document.getElementById("otherPeerID").onchange = messagesHistory;
+otherPeerID.onchange = messagesHistory;
+
+let conn = null;
 
 const data = axios({
     method: "post",
@@ -47,85 +39,79 @@ const data = axios({
   .catch(e => {console.log(e.message);});
 const peer = new Peer(ID, await data);
 
-peer.on("open", (id) => {
-  document.getElementById("selfID").innerHTML = `Your ID is ${id}.`;
-});
-
-let conn = null;
+const messageDetails = (message, peerID, person) => {
+  const date = new Date();
+  messagesBox.innerHTML = `<br> ${person}: ${date} ${message} ${messagesBox.innerHTML}`;
+  const peerMessages = JSON.parse(storage.peer_messages); 
+  peerMessages[peerID].push([person, date, message]);
+  storage.peer_messages = JSON.stringify(peerMessages);
+}
+const getMessage = (message) => {
+  messageDetails(message, conn.peer, "Peer");
+}
+const oldMessages = (peerID) => {
+  connectionBox.innerHTML = `Connected to ${peerID}.`
+  messagesBox.innerHTML = "";
+  if(!peerMessages[peerID]) {
+    peerMessages[peerID] = [];
+    storage.peer_messages = JSON.stringify(peerMessages);
+  }
+  if(peerMessages[peerID].length !== 0)
+    peerMessages[peerID].forEach( (a) => {
+      messagesBox.innerHTML = `<br> ${a[0]}: ${a[1]} ${a[2]} ${messagesBox.innerHTML}`;
+    });
+}
+const connectionDetails = (connection, peerID) => {
+  if(conn)
+    conn.close();
+  conn = connection;
+  connection.on("open", () => {
+    oldMessages(peerID);
+  });
+  connection.on("data", getMessage);
+  connection.on("close", () => {
+    connectionBox.innerHTML = "Connection closed.";
+  });
+}
 const sendPeerID = () => {
   const peerID = document.getElementById("peerID").value;
   if(peerID !== "") {
     const conf = confirm(`Connect to ${peerID}?`);
-    if(conf) {
-      if(conn) {
-        conn.close();
-        document.getElementById("connection").innerHTML = "Connection closed by self.";
-      }
-      conn = peer.connect(peerID);
-      conn.on("open", () => {
-        oldMessages(peerID);
-        conn.on("data", (message) => {
-          getMessage(message);
-        });
-      });
-      conn.on("close", () => {
-        document.getElementById("connection").innerHTML = "Connection closed by peer.";
-      });
-    }
+    if(conf)
+      connectionDetails(peer.connect(peerID), peerID);
   }
 }
-document.getElementById("connectButton").addEventListener("click", sendPeerID);
+const getPeerID = (connection) => {
+  const conf = confirm(`Incoming connection from ${connection.peer}`);
+  if(conf)
+    connectionDetails(connection, connection.peer);
+  else
+    connection.close();
+}
 
 const sendMessage = () => {
-  const message = document.getElementById("message").value;
-  conn.send(message);
-  const date = new Date();
-  document.getElementById("messages").innerHTML = `<br> Self: ${date} ${message} ${document.getElementById("messages").innerHTML}`;
-  const peerID = conn.peer;
-  const peerMessages = JSON.parse(storage.peer_messages); 
-  peerMessages[peerID].push(["Self", date, message]);
-  storage.peer_messages = JSON.stringify(peerMessages);
+  if(conn && conn._open) {
+    const message = document.getElementById("message").value;
+    conn.send(message);
+    messageDetails(message, conn.peer, "Self");
+  }
 }
-document.getElementById("messageButton").addEventListener("click", () => { 
-  if(conn && conn._open) 
-    sendMessage();
+
+peer.on("open", (id) => {
+  document.getElementById("selfID").innerHTML = `Your ID is ${id}.`;
 });
 
-const getPeerID = () => {
-  const peerID = conn.peer;
-  conn.on("open", () => {
-    oldMessages(peerID);
-  });
-  conn.on("close", () => {
-    document.getElementById("connection").innerHTML = "Connection closed by peer.";
-  });
-}
-const getMessage = (message) => {
-  const peerID = conn.peer;
-  const date = new Date();
-  document.getElementById("messages").innerHTML = `<br> Peer: ${date} ${message} ${document.getElementById("messages").innerHTML}`;
-  const peerMessages = JSON.parse(storage.peer_messages);
-  peerMessages[peerID].push(["Peer", date, message]);
-  storage.peer_messages = JSON.stringify(peerMessages);
-}
-peer.on("connection", (connection) => {
-  const conf = confirm(`Incoming connection from ${connection.peer}`);
-  if(conf) {
-    if(conn)
-      conn.close();
-    conn = connection;
-    getPeerID();
-    conn.on("data", getMessage);
-  }
-  else {
-    connection.close();
-  }
-});
+document.getElementById("connectButton").addEventListener("click", sendPeerID);
+
+peer.on("connection", getPeerID);
+
+document.getElementById("messageButton").addEventListener("click", sendMessage);
 
 peer.on("disconnected", () => {
-  document.getElementById("connection").innerHTML = "Connection lost.";
+  connectionBox.innerHTML = "Connection disconnected.";
 });
+
 peer.on("close", () => {
   conn = null;
-  document.getElementById("connection").innerHTML = "Connection lost.";
+  connectionBox.innerHTML = "Connection closed.";
 });
